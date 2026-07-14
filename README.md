@@ -50,11 +50,14 @@ button). ntfy.sh works for players spread across different homes with zero setup
 
 ### 2. Build the app
 
-**Option A — GitHub Actions (no Android Studio needed):** fork this repo, add
-repository secrets `SUPABASE_URL` and `SUPABASE_ANON_KEY` (plus optionally
-`GOOGLE_SERVICES_JSON` for native push and `KEYSTORE_*` for signing — see the
-header of [`.github/workflows/release.yml`](.github/workflows/release.yml)),
-then push a tag:
+**Option A — GitHub Actions (no Android Studio needed):** fork this repo and:
+
+1. Enable workflows in your fork (**Actions** tab → "I understand my workflows,
+   go ahead and enable them" — GitHub disables them by default on forks).
+2. Add repository secrets `SUPABASE_URL` and `SUPABASE_ANON_KEY` (plus optionally
+   `GOOGLE_SERVICES_JSON` for native push and `KEYSTORE_*` for signing — see the
+   header of [`.github/workflows/release.yml`](.github/workflows/release.yml)).
+3. Push a tag:
 
 ```bash
 git tag v1.0.0 && git push origin v1.0.0
