@@ -25,3 +25,6 @@ bridge/.env
 bridge/service-account.json
 # Local Claude Code settings
 .claude/settings.local.json
+# Signing keys — never commit
+*.jks
+*.keystore

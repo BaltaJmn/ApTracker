@@ -50,6 +50,21 @@ button). ntfy.sh works for players spread across different homes with zero setup
 
 ### 2. Build the app
 
+**Option A — GitHub Actions (no Android Studio needed):** fork this repo, add
+repository secrets `SUPABASE_URL` and `SUPABASE_ANON_KEY` (plus optionally
+`GOOGLE_SERVICES_JSON` for native push and `KEYSTORE_*` for signing — see the
+header of [`.github/workflows/release.yml`](.github/workflows/release.yml)),
+then push a tag:
+
+```bash
+git tag v1.0.0 && git push origin v1.0.0
+```
+
+The signed APK appears attached to the release a few minutes later. Your group
+downloads it straight from your fork's **Releases** page.
+
+**Option B — local build:**
+
 ```bash
 cp composeApp/src/commonMain/kotlin/com/baltajmn/aptracker/core/data/SupabaseConfig.kt.template \
    composeApp/src/commonMain/kotlin/com/baltajmn/aptracker/core/data/SupabaseConfig.kt
