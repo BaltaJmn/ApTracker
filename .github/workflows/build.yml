@@ -1,0 +1,41 @@
+# Keeps main green: compiles the Android app (with placeholder config, no
+# secrets needed) and syntax-checks the bridge on every push and pull request.
+name: Build check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Use placeholder SupabaseConfig.kt
+        run: |
+          cp composeApp/src/commonMain/kotlin/com/baltajmn/aptracker/core/data/SupabaseConfig.kt.template \
+             composeApp/src/commonMain/kotlin/com/baltajmn/aptracker/core/data/SupabaseConfig.kt
+
+      - name: Assemble debug APK
+        run: ./gradlew :composeApp:assembleDebug
+
+  bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Syntax-check the bridge
+        run: python -m compileall -q bridge/aptracker_bridge

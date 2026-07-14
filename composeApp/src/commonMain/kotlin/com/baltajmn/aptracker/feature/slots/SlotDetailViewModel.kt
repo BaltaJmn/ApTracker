@@ -59,9 +59,9 @@ class SlotDetailViewModel(
             _state.update {
                 it.copy(
                     slot = slot,
+                    // Already newest-first from the repository (server-side order).
                     activity = activityResult.getOrDefault(emptyList())
-                        .filter { e -> e.slotName == slotName }
-                        .sortedByDescending { e -> e.timestamp },
+                        .filter { e -> e.slotName == slotName },
                     isLoading = false,
                     error = slotsResult.exceptionOrNull()?.message
                         ?: activityResult.exceptionOrNull()?.message

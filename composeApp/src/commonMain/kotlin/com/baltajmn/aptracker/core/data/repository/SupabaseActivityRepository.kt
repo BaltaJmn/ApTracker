@@ -4,6 +4,7 @@ import com.baltajmn.aptracker.core.domain.model.ActivityEvent
 import com.baltajmn.aptracker.core.domain.repository.ActivityRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeRecord
@@ -17,8 +18,14 @@ import kotlinx.coroutines.launch
 class SupabaseActivityRepository(private val supabase: SupabaseClient) : ActivityRepository {
 
     override suspend fun getActivityForRoom(roomId: String): Result<List<ActivityEvent>> = runCatching {
+        // Newest first, capped: the feed shows recent events; unbounded selects
+        // get slow as the activity table grows.
         supabase.from("activity")
-            .select { filter { eq("room_id", roomId) } }
+            .select {
+                filter { eq("room_id", roomId) }
+                order("timestamp", Order.DESCENDING)
+                limit(200)
+            }
             .decodeList()
     }
 

@@ -25,6 +25,7 @@ class Config:
     tls_insecure: bool
     log_level: str
     fcm_service_account_file: str | None
+    activity_retention_days: int
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -38,4 +39,5 @@ class Config:
             tls_insecure=str(_get("AP_TLS_INSECURE", "false")).lower() == "true",
             log_level=str(_get("LOG_LEVEL", "INFO")).upper(),
             fcm_service_account_file=_get("FCM_SERVICE_ACCOUNT_FILE"),
+            activity_retention_days=int(_get("ACTIVITY_RETENTION_DAYS", "30")),  # type: ignore[arg-type]
         )

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .archipelago import RoomWatcher, TrackerEvent
@@ -34,6 +36,7 @@ class Tracker:
         self._watchers: dict[str, dict[str, Any]] = {}  # room_id -> {task, hash}
         self._slots_by_room: dict[str, list[dict[str, Any]]] = {}
         self._android_tokens_by_user: dict[str, list[str]] = {}
+        self._last_cleanup = 0.0
 
     async def run(self) -> None:
         log.info("ApTracker bridge started (sync every %ss)", self.config.sync_interval)
@@ -60,6 +63,8 @@ class Tracker:
 
         if self.fcm:
             await self._refresh_push_tokens()
+
+        await self._cleanup_old_activity()
 
         # Only watch rooms that actually have tracked slots.
         wanted = {r["id"]: r for r in rooms if slots_by_room.get(r["id"])}
@@ -126,6 +131,20 @@ class Tracker:
             title, message, tags, priority = self._format(slot, event)
             await self.ntfy.publish(topic, title, message, tags, priority)
             await self._send_fcm(room, title, message)
+
+    async def _cleanup_old_activity(self) -> None:
+        """Once a day, prune activity older than ACTIVITY_RETENTION_DAYS so the
+        table (and the free Supabase tier) doesn't grow without bound."""
+        days = self.config.activity_retention_days
+        if days <= 0 or time.monotonic() - self._last_cleanup < 86_400:
+            return
+        self._last_cleanup = time.monotonic()
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        try:
+            await self.supabase.delete_activity_before(cutoff)
+            log.info("pruned activity older than %s days", days)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("activity cleanup failed: %s", exc)
 
     async def _refresh_push_tokens(self) -> None:
         try:

@@ -54,6 +54,15 @@ class SupabaseREST:
         resp.raise_for_status()
         return resp.json()
 
+    async def delete_activity_before(self, cutoff_iso: str) -> None:
+        headers = dict(self._headers, Prefer="return=minimal")
+        resp = await self._client.delete(
+            f"{self._base}/activity",
+            headers=headers,
+            params={"timestamp": f"lt.{cutoff_iso}"},
+        )
+        resp.raise_for_status()
+
     async def delete_push_token(self, token: str) -> None:
         headers = dict(self._headers, Prefer="return=minimal")
         resp = await self._client.delete(
