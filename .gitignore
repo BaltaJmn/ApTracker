@@ -28,3 +28,5 @@ bridge/service-account.json
 # Signing keys — never commit
 *.jks
 *.keystore
+__pycache__/
+*.pyc
