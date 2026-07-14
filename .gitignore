@@ -1,0 +1,27 @@
+*.iml
+.kotlin
+.gradle
+**/build/
+xcuserdata
+!src/**/build/
+local.properties
+.idea
+.DS_Store
+captures
+.externalNativeBuild
+.cxx
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+node_modules/
+# Per-deployment config — never commit real values (templates are provided)
+**/SupabaseConfig.kt
+composeApp/google-services.json
+# Bridge secrets — never commit
+bridge/.env
+bridge/service-account.json
+# Local Claude Code settings
+.claude/settings.local.json

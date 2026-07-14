@@ -1,0 +1,63 @@
+# Dedicated, isolated stack for the ApTracker bridge.
+# Compose puts these services on their own project network, so nothing here
+# mixes with your other Raspberry Pi integrations.
+#
+#   docker compose up -d                 # bridge only (uses external ntfy, e.g. ntfy.sh)
+#   docker compose --profile ntfy up -d  # bridge + a self-hosted ntfy on the Pi
+#
+# View logs:  docker compose logs -f aptracker-bridge
+
+services:
+  aptracker-bridge:
+    build: .
+    image: aptracker-bridge:latest
+    container_name: aptracker-bridge
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - aptracker
+    # Firebase service-account key for Android push (FCM). Mounted read-only.
+    # If you don't use FCM, remove these two lines and unset FCM_SERVICE_ACCOUNT_FILE.
+    volumes:
+      - ./service-account.json:/app/service-account.json:ro
+
+  # Optional: self-hosted ntfy, enabled with `--profile ntfy`.
+  # When used, set NTFY_BASE_URL=http://ntfy:80 in .env (internal service name),
+  # and subscribe your phone to http://<your-pi-ip>:8080 from outside.
+  # NOTE: that LAN address only reaches phones on YOUR home WiFi. If your users
+  # are in different homes, use ntfy.sh (the default) or expose this container
+  # with a Cloudflare Tunnel. See README "Which push method should I use?".
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: aptracker-ntfy
+    profiles: ["ntfy"]
+    command: serve
+    restart: unless-stopped
+    environment:
+      - NTFY_BASE_URL=http://ntfy:80
+      - NTFY_CACHE_FILE=/var/cache/ntfy/cache.db
+      # Open access: security relies on the topic name being a hard-to-guess
+      # secret. If you expose this ntfy to the internet, lock it down instead —
+      # set NTFY_AUTH_FILE + NTFY_AUTH_DEFAULT_ACCESS=deny-all and create tokens.
+      # https://docs.ntfy.sh/config/#access-control
+    volumes:
+      - ntfy-cache:/var/cache/ntfy
+      - ntfy-lib:/var/lib/ntfy
+    ports:
+      - "8080:80"
+    networks:
+      - aptracker
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -q healthy"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+networks:
+  aptracker:
+    name: aptracker
+
+volumes:
+  ntfy-cache:
+  ntfy-lib:

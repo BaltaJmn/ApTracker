@@ -1,0 +1,9 @@
+.env
+service-account.json
+.venv/
+__pycache__/
+*.pyc
+deploy/
+Makefile
+README.md
+.env.example

@@ -1,0 +1,30 @@
+{
+  "_comment": "OPTIONAL — native Android push via Firebase (FCM). Copy to google-services.json and replace with the file downloaded from your Firebase project (package name must be com.baltajmn.aptracker, or change applicationId to match). Without this file the app still builds and works; Android users just receive notifications via ntfy like iOS.",
+  "project_info": {
+    "project_number": "YOUR-PROJECT-NUMBER",
+    "project_id": "YOUR-PROJECT-ID",
+    "storage_bucket": "YOUR-PROJECT-ID.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "YOUR-MOBILE-SDK-APP-ID",
+        "android_client_info": {
+          "package_name": "com.baltajmn.aptracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "YOUR-API-KEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,17 @@
+package com.baltajmn.aptracker.core.data
+
+/**
+ * Supabase project credentials — REQUIRED to build.
+ *
+ * 1. Copy this file to SupabaseConfig.kt (same directory).
+ * 2. Fill in your project's URL and anon key from:
+ *    https://supabase.com/dashboard/project/_/settings/api
+ *
+ * SupabaseConfig.kt is gitignored, so your real values are never committed.
+ * The anon key is safe to ship inside the app (access is enforced by RLS);
+ * NEVER put the service_role key here.
+ */
+object SupabaseConfig {
+    const val URL = "https://YOUR-PROJECT-REF.supabase.co"
+    const val ANON_KEY = "YOUR-ANON-KEY"
+}
